@@ -1,20 +1,20 @@
 {
   "version": 2,
-  "public": true,
-  "rewrites": [
-    { "source": "/", "destination": "/frontend/public/index.html" },
-    { "source": "/login", "destination": "/frontend/public/login.html" },
-    { "source": "/register", "destination": "/frontend/public/register.html" },
-    { "source": "/dashboard-public", "destination": "/frontend/public/dashboard-public.html" },
-    { "source": "/dashboard-staff", "destination": "/frontend/public/dashboard-staff.html" },
-    { "source": "/dashboard-admin", "destination": "/frontend/public/dashboard-admin.html" },
-    { "source": "/report-detail", "destination": "/frontend/public/report-detail.html" },
-    { "source": "/anonymous", "destination": "/frontend/public/anonymous.html" },
-    { "source": "/track-report", "destination": "/frontend/public/track-report.html" },
-    { "source": "/analytics", "destination": "/frontend/public/analytics.html" },
-    { "source": "/dashboard", "destination": "/frontend/public/dashboard-public.html" },
-    { "source": "/css/(.*)", "destination": "/frontend/public/css/$1" },
-    { "source": "/js/(.*)", "destination": "/frontend/public/js/$1" },
-    { "source": "/api/(.*)", "destination": "https://crime-report-backend.up.railway.app/api/$1" }
+  "routes": [
+    { "src": "/api/(.*)", "dest": "https://crime-report-backend.up.railway.app/api/$1" },
+    { "src": "/css/(.*)", "dest": "/frontend/public/css/$1" },
+    { "src": "/js/(.*)", "dest": "/frontend/public/js/$1" },
+    { "src": "/login", "dest": "/frontend/public/login.html" },
+    { "src": "/register", "dest": "/frontend/public/register.html" },
+    { "src": "/dashboard-public", "dest": "/frontend/public/dashboard-public.html" },
+    { "src": "/dashboard-staff", "dest": "/frontend/public/dashboard-staff.html" },
+    { "src": "/dashboard-admin", "dest": "/frontend/public/dashboard-admin.html" },
+    { "src": "/report-detail", "dest": "/frontend/public/report-detail.html" },
+    { "src": "/anonymous", "dest": "/frontend/public/anonymous.html" },
+    { "src": "/track-report", "dest": "/frontend/public/track-report.html" },
+    { "src": "/analytics", "dest": "/frontend/public/analytics.html" },
+    { "src": "/dashboard", "dest": "/frontend/public/dashboard-public.html" },
+    { "src": "/", "dest": "/frontend/public/index.html" },
+    { "src": "/(.*)", "dest": "/frontend/public/$1" }
   ]
 }
