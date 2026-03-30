@@ -5,10 +5,7 @@
 
 'use strict';
 
-// Detect environment and set the API URL accordingly
-const API = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
-  ? 'http://localhost:5001/api'
-  : 'https://crime-report-backend.up.railway.app/api'; // <-- REPLACE THIS with your actual Railway App URL (e.g., https://your-app.up.railway.app/api)
+const API = '/api'; // Using Vercel Proxy to handle both Local and Production mapping automatically
 
 // ─────────────────────────────────────────────
 // Modern UI Interactions (Homepage & Global)
@@ -42,10 +39,10 @@ document.addEventListener('DOMContentLoaded', () => {
   featureCards.forEach(card => {
     card.addEventListener('click', () => {
       const isExpanded = card.classList.contains('expanded');
-      
+
       // Optional: Collapse others when one is opened
       featureCards.forEach(c => c.classList.remove('expanded'));
-      
+
       if (!isExpanded) {
         card.classList.add('expanded');
       }
@@ -70,9 +67,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Close on outside click
     document.addEventListener('click', (e) => {
-      if (sidebarDrawer.classList.contains('open') && 
-          !sidebarDrawer.contains(e.target) && 
-          !menuBtn.contains(e.target)) {
+      if (sidebarDrawer.classList.contains('open') &&
+        !sidebarDrawer.contains(e.target) &&
+        !menuBtn.contains(e.target)) {
         sidebarDrawer.classList.remove('open');
       }
     });
@@ -152,35 +149,35 @@ function animateCounters() {
     const text = counter.innerText;
     const suffix = text.replace(/[0-9.]/g, '');
     const target = parseFloat(text.replace(/[^0-9.]/g, ''));
-    
+
     if (isNaN(target)) return;
-    
+
     let count = 0;
     const duration = 1500; // 1.5 seconds
     const startTime = performance.now();
-    
+
     const updateCount = (now) => {
       const elapsed = now - startTime;
       const progress = Math.min(elapsed / duration, 1);
-      
+
       // Easing function: easeOutExpo
       const easedProgress = progress === 1 ? 1 : 1 - Math.pow(2, -10 * progress);
-      
+
       count = target * easedProgress;
-      
+
       if (target % 1 === 0) {
         counter.innerText = Math.floor(count).toLocaleString() + suffix;
       } else {
         counter.innerText = count.toFixed(1) + suffix;
       }
-      
+
       if (progress < 1) {
         requestAnimationFrame(updateCount);
       } else {
         counter.innerText = text; // Ensure final value is exact string
       }
     };
-    
+
     requestAnimationFrame(updateCount);
   });
 }
@@ -203,11 +200,11 @@ let gLatInput = null, gLngInput = null, gLocInput = null;
  */
 function initCrimeMap(containerId, inputId, wrapperId, latId, lngId) {
   const container = document.getElementById(containerId);
-  const input     = document.getElementById(inputId);
-  const wrapper   = document.getElementById(wrapperId);
-  gLatInput       = document.getElementById(latId);
-  gLngInput       = document.getElementById(lngId);
-  gLocInput       = input;
+  const input = document.getElementById(inputId);
+  const wrapper = document.getElementById(wrapperId);
+  gLatInput = document.getElementById(latId);
+  gLngInput = document.getElementById(lngId);
+  gLocInput = input;
 
   if (!container || !input) return;
 
@@ -312,7 +309,7 @@ async function detectUserLocation(inputId, latId, lngId) {
   const input = document.getElementById(inputId);
   const latIn = document.getElementById(latId);
   const lngIn = document.getElementById(lngId);
-  const btn   = document.querySelector('.btn-locate');
+  const btn = document.querySelector('.btn-locate');
 
   if (btn) { btn.disabled = true; btn.textContent = '⏳ Detecting...'; }
   toast('Detecting your location...', 'info');
@@ -415,7 +412,7 @@ function showTab(name, btn) {
 
   const panel = document.getElementById('tab-' + name);
   if (panel) panel.classList.add('active');
-  if (btn)   btn.classList.add('active');
+  if (btn) btn.classList.add('active');
 
   // Map Init for createReport tab
   if (name === 'createReport') {
@@ -493,7 +490,7 @@ function setNavUser(user) {
 }
 
 async function logoutUser() {
-  try { await api('/auth/logout', { method: 'POST' }); } catch {}
+  try { await api('/auth/logout', { method: 'POST' }); } catch { }
   window.location.href = '/login';
 }
 
@@ -528,7 +525,7 @@ let selectedFiles = [];
 
 function handleImageSelect(files) {
   const remaining = 10 - selectedFiles.length;
-  const newFiles  = Array.from(files).slice(0, remaining);
+  const newFiles = Array.from(files).slice(0, remaining);
 
   newFiles.forEach(file => {
     if (file.size > 5 * 1024 * 1024) { toast(`"${file.name}" exceeds 5MB limit.`, 'warning'); return; }
@@ -569,7 +566,7 @@ function renderPreviews(gridId, files, onRemove) {
 let anonSelectedFiles = [];
 function handleAnonImageSelect(files) {
   const remaining = 10 - anonSelectedFiles.length;
-  const newFiles  = Array.from(files).slice(0, remaining);
+  const newFiles = Array.from(files).slice(0, remaining);
   newFiles.forEach(file => {
     if (file.size > 5 * 1024 * 1024) { toast(`"${file.name}" exceeds 5MB limit.`, 'warning'); return; }
     anonSelectedFiles.push(file);
@@ -588,7 +585,7 @@ let searchTimer = null;
 function debounceSearch() {
   clearTimeout(searchTimer);
   searchTimer = setTimeout(() => {
-    if (document.getElementById('searchInput'))      loadMyReports();
+    if (document.getElementById('searchInput')) loadMyReports();
     else if (document.getElementById('staffSearch')) loadStaffReports();
   }, 400);
 }
@@ -610,7 +607,7 @@ function renderReportList(containerId, reports, showReporter = false) {
   }
 
   el.innerHTML = reports.map(r => {
-    const coordsShort = (r.latitude && r.longitude) 
+    const coordsShort = (r.latitude && r.longitude)
       ? `<span title="Coordinates: ${r.latitude}, ${r.longitude}">🌐 ${Number(r.latitude).toFixed(4)}, ${Number(r.longitude).toFixed(4)}</span>`
       : '';
     return `
@@ -649,16 +646,16 @@ function initLoginPage() {
   api('/auth/me').then(d => {
     const map = { admin: '/dashboard-admin', staff: '/dashboard-staff', user: '/dashboard-public' };
     window.location.href = map[d.user.role] || '/dashboard-public';
-  }).catch(() => {});
+  }).catch(() => { });
 
   document.getElementById('loginForm')?.addEventListener('submit', async e => {
     e.preventDefault();
     clearAlert('alertBox');
 
-    const email    = document.getElementById('email').value.trim();
+    const email = document.getElementById('email').value.trim();
     const password = document.getElementById('password').value;
-    const btn      = document.getElementById('loginBtn');
-    const spinner  = document.getElementById('loginSpinner');
+    const btn = document.getElementById('loginBtn');
+    const spinner = document.getElementById('loginSpinner');
 
     if (!email || !password) return showAlert('alertBox', 'Please enter your email and password.');
 
@@ -667,7 +664,7 @@ function initLoginPage() {
 
     try {
       const data = await api('/auth/login', { method: 'POST', body: { email, password } });
-      const map  = { admin: '/dashboard-admin', staff: '/dashboard-staff', user: '/dashboard-public' };
+      const map = { admin: '/dashboard-admin', staff: '/dashboard-staff', user: '/dashboard-public' };
       window.location.href = map[data.user.role] || '/dashboard-public';
     } catch (err) {
       showAlert('alertBox', err.message);
@@ -686,11 +683,11 @@ function initRegisterPage() {
     e.preventDefault();
     clearAlert('alertBox');
 
-    const name    = document.getElementById('name').value.trim();
-    const email   = document.getElementById('email').value.trim();
-    const pass    = document.getElementById('password').value;
+    const name = document.getElementById('name').value.trim();
+    const email = document.getElementById('email').value.trim();
+    const pass = document.getElementById('password').value;
     const confirm = document.getElementById('confirmPassword').value;
-    const btn     = document.getElementById('registerBtn');
+    const btn = document.getElementById('registerBtn');
     const spinner = document.getElementById('registerSpinner');
 
     if (!name || !email || !pass || !confirm)
@@ -744,7 +741,7 @@ async function initPublicDashboard() {
   // Drag-and-drop support
   const uploadArea = document.getElementById('uploadArea');
   if (uploadArea) {
-    uploadArea.addEventListener('dragover',  e => { e.preventDefault(); uploadArea.classList.add('drag-over'); });
+    uploadArea.addEventListener('dragover', e => { e.preventDefault(); uploadArea.classList.add('drag-over'); });
     uploadArea.addEventListener('dragleave', () => uploadArea.classList.remove('drag-over'));
     uploadArea.addEventListener('drop', e => {
       e.preventDefault();
@@ -758,35 +755,35 @@ async function initPublicDashboard() {
     e.preventDefault();
     clearAlert('createAlertBox');
 
-    const category_id    = document.getElementById('cr_category').value;
-    const title          = document.getElementById('cr_title').value.trim();
-    const description    = document.getElementById('cr_description').value.trim();
-    const location       = document.getElementById('cr_location').value.trim();
-    const incident_date  = document.getElementById('cr_date').value;
-    const incident_time  = document.getElementById('cr_time').value;
-    const priority       = document.getElementById('cr_priority').value;
+    const category_id = document.getElementById('cr_category').value;
+    const title = document.getElementById('cr_title').value.trim();
+    const description = document.getElementById('cr_description').value.trim();
+    const location = document.getElementById('cr_location').value.trim();
+    const incident_date = document.getElementById('cr_date').value;
+    const incident_time = document.getElementById('cr_time').value;
+    const priority = document.getElementById('cr_priority').value;
 
     if (!category_id || !title || !description || !location || !incident_date || !incident_time)
       return showAlert('createAlertBox', 'Please fill in all required fields.');
 
-    const btn     = document.getElementById('submitReportBtn');
+    const btn = document.getElementById('submitReportBtn');
     const spinner = document.getElementById('submitSpinner');
-    btn.disabled  = true;
+    btn.disabled = true;
     spinner?.classList.remove('hidden');
 
     try {
       const fd = new FormData();
-      fd.append('category_id',   category_id);
-      fd.append('title',         title);
-      fd.append('description',   description);
-      fd.append('location',      location);
+      fd.append('category_id', category_id);
+      fd.append('title', title);
+      fd.append('description', description);
+      fd.append('location', location);
       const crLat = document.getElementById('cr_lat')?.value;
       const crLng = document.getElementById('cr_lng')?.value;
       if (crLat) fd.append('latitude', crLat);
       if (crLng) fd.append('longitude', crLng);
       fd.append('incident_date', incident_date);
       fd.append('incident_time', incident_time);
-      fd.append('priority',      priority);
+      fd.append('priority', priority);
       selectedFiles.forEach(f => fd.append('images', f));
 
       const data = await api('/reports', { method: 'POST', body: fd });
@@ -808,13 +805,13 @@ async function initPublicDashboard() {
 }
 
 async function loadMyReports() {
-  const search   = document.getElementById('searchInput')?.value.trim() || '';
-  const category = document.getElementById('filterCategory')?.value    || '';
-  const status   = document.getElementById('filterStatus')?.value       || '';
-  const params   = new URLSearchParams();
-  if (search)   params.set('search',   search);
+  const search = document.getElementById('searchInput')?.value.trim() || '';
+  const category = document.getElementById('filterCategory')?.value || '';
+  const status = document.getElementById('filterStatus')?.value || '';
+  const params = new URLSearchParams();
+  if (search) params.set('search', search);
   if (category) params.set('category', category);
-  if (status)   params.set('status',   status);
+  if (status) params.set('status', status);
 
   document.getElementById('reportsList').innerHTML =
     `<div class="loading-overlay"><div class="spinner"></div> Loading...</div>`;
@@ -823,11 +820,11 @@ async function loadMyReports() {
     const reports = await api('/reports?' + params);
 
     // Update stat cards
-    document.getElementById('statTotal').textContent        = reports.length;
-    document.getElementById('statPending').textContent      = reports.filter(r => r.status === 'pending').length;
+    document.getElementById('statTotal').textContent = reports.length;
+    document.getElementById('statPending').textContent = reports.filter(r => r.status === 'pending').length;
     document.getElementById('statInvestigating').textContent = reports.filter(r => r.status === 'investigating').length;
-    document.getElementById('statResolved').textContent     = reports.filter(r => r.status === 'resolved').length;
-    
+    document.getElementById('statResolved').textContent = reports.filter(r => r.status === 'resolved').length;
+
     animateCounters();
     renderReportList('reportsList', reports);
   } catch (err) {
@@ -853,11 +850,11 @@ async function loadStaffOverview() {
   try {
     const data = await api('/analytics/stats');
     const t = data.totals;
-    document.getElementById('ss_total').textContent        = t.total;
-    document.getElementById('ss_pending').textContent      = t.pending;
+    document.getElementById('ss_total').textContent = t.total;
+    document.getElementById('ss_pending').textContent = t.pending;
     document.getElementById('ss_investigating').textContent = t.investigating;
-    document.getElementById('ss_resolved').textContent     = t.resolved;
-    document.getElementById('ss_critical').textContent     = t.critical;
+    document.getElementById('ss_resolved').textContent = t.resolved;
+    document.getElementById('ss_critical').textContent = t.critical;
 
     animateCounters();
     // Category breakdown
@@ -901,20 +898,20 @@ async function loadStaffOverview() {
 }
 
 async function loadStaffReports() {
-  const search   = document.getElementById('staffSearch')?.value.trim()          || '';
-  const category = document.getElementById('staffFilterCat')?.value              || '';
-  const status   = document.getElementById('staffFilterStatus')?.value            || '';
-  const priority = document.getElementById('staffFilterPriority')?.value          || '';
-  const dateFrom = document.getElementById('staffDateFrom')?.value                || '';
-  const dateTo   = document.getElementById('staffDateTo')?.value                  || '';
+  const search = document.getElementById('staffSearch')?.value.trim() || '';
+  const category = document.getElementById('staffFilterCat')?.value || '';
+  const status = document.getElementById('staffFilterStatus')?.value || '';
+  const priority = document.getElementById('staffFilterPriority')?.value || '';
+  const dateFrom = document.getElementById('staffDateFrom')?.value || '';
+  const dateTo = document.getElementById('staffDateTo')?.value || '';
 
   const params = new URLSearchParams();
-  if (search)   params.set('search',   search);
+  if (search) params.set('search', search);
   if (category) params.set('category', category);
-  if (status)   params.set('status',   status);
+  if (status) params.set('status', status);
   if (priority) params.set('priority', priority);
   if (dateFrom) params.set('dateFrom', dateFrom);
-  if (dateTo)   params.set('dateTo',   dateTo);
+  if (dateTo) params.set('dateTo', dateTo);
 
   document.getElementById('staffReportsList').innerHTML =
     `<div class="loading-overlay"><div class="spinner"></div> Loading...</div>`;
@@ -944,11 +941,11 @@ async function loadAdminOverview() {
   try {
     const data = await api('/analytics/stats');
     const t = data.totals;
-    document.getElementById('adm_total').textContent     = t.total;
+    document.getElementById('adm_total').textContent = t.total;
     document.getElementById('adm_escalated').textContent = t.escalated;
-    document.getElementById('adm_critical').textContent  = t.critical;
-    document.getElementById('adm_resolved').textContent  = t.resolved;
-    document.getElementById('adm_anon').textContent      = t.anonymous;
+    document.getElementById('adm_critical').textContent = t.critical;
+    document.getElementById('adm_resolved').textContent = t.resolved;
+    document.getElementById('adm_anon').textContent = t.anonymous;
 
     animateCounters();
     const breakdown = document.getElementById('adminCategoryBreakdown');
@@ -974,7 +971,7 @@ async function loadAdminOverview() {
 
 async function loadAdminReports() {
   const search = document.getElementById('adminSearch')?.value.trim() || '';
-  const status = document.getElementById('adminFilterStatus')?.value  || '';
+  const status = document.getElementById('adminFilterStatus')?.value || '';
   const params = new URLSearchParams();
   if (search) params.set('search', search);
   if (status) params.set('status', status);
@@ -1012,16 +1009,16 @@ async function loadUsers() {
 }
 
 function openRoleModal(id, name, role) {
-  document.getElementById('roleModalUserId').value   = id;
+  document.getElementById('roleModalUserId').value = id;
   document.getElementById('roleModalUserName').textContent = name;
-  document.getElementById('roleModalSelect').value   = role;
+  document.getElementById('roleModalSelect').value = role;
   document.getElementById('roleModal').classList.add('open');
 }
 function closeModal(id) {
   document.getElementById(id)?.classList.remove('open');
 }
 async function submitRoleChange() {
-  const id   = document.getElementById('roleModalUserId').value;
+  const id = document.getElementById('roleModalUserId').value;
   const role = document.getElementById('roleModalSelect').value;
   try {
     await api(`/users/${id}`, { method: 'PATCH', body: { role } });
@@ -1057,11 +1054,11 @@ function initAdminCreateUserForm() {
     e.preventDefault();
     clearAlert('createUserAlert');
 
-    const name     = document.getElementById('cu_name').value.trim();
-    const email    = document.getElementById('cu_email').value.trim();
+    const name = document.getElementById('cu_name').value.trim();
+    const email = document.getElementById('cu_email').value.trim();
     const password = document.getElementById('cu_password').value;
-    const phone    = document.getElementById('cu_phone').value.trim();
-    const role     = document.getElementById('cu_role').value;
+    const phone = document.getElementById('cu_phone').value.trim();
+    const role = document.getElementById('cu_role').value;
 
     if (!name || !email || !password)
       return showAlert('createUserAlert', 'Name, email, and password are required.');
@@ -1083,7 +1080,7 @@ function initAdminCreateUserForm() {
 // ── REPORT DETAIL PAGE
 // ─────────────────────────────────────────────
 let detailReportId = null;
-let detailRole     = null;
+let detailRole = null;
 
 async function initReportDetailPage() {
   const user = await requireAuth();
@@ -1105,9 +1102,9 @@ async function initReportDetailPage() {
 
 async function loadReportDetail() {
   try {
-    const data    = document.getElementById('detailContent');
+    const data = document.getElementById('detailContent');
     const loading = document.getElementById('detailLoading');
-    const errEl   = document.getElementById('detailError');
+    const errEl = document.getElementById('detailError');
 
     const result = await api(`/reports/${detailReportId}`);
     const { report, images, comments, activity } = result;
@@ -1121,7 +1118,7 @@ async function loadReportDetail() {
       (report.escalated ? ' <span class="badge badge-escalated">🚨 Escalated</span>' : '') +
       (report.is_anonymous ? ' <span class="badge" style="background:#f3e8ff;color:#6b21a8">🕵️ Anonymous</span>' : '');
 
-    document.getElementById('detailTitle').textContent    = report.title;
+    document.getElementById('detailTitle').textContent = report.title;
     document.getElementById('detailCategory').textContent = `${report.category_icon || ''} ${report.category_name || ''}`;
     document.getElementById('detailDescription').textContent = report.description;
 
@@ -1143,8 +1140,8 @@ async function loadReportDetail() {
 
     // Location panel with map (staff/admin)
     const locPanel = document.getElementById('locationPanel');
-    const locInfo  = document.getElementById('locationInfo');
-    const mapCont  = document.getElementById('detailMapContainer');
+    const locInfo = document.getElementById('locationInfo');
+    const mapCont = document.getElementById('detailMapContainer');
     if (locPanel && (report.latitude && report.longitude)) {
       locPanel.classList.remove('hidden');
       locInfo.innerHTML = `
@@ -1205,9 +1202,9 @@ async function loadReportDetail() {
     if (detailRole === 'staff' || detailRole === 'admin') {
       document.getElementById('updatePanel').classList.remove('hidden');
       document.getElementById('commentPanel').classList.remove('hidden');
-      document.getElementById('updateStatus').value   = report.status;
+      document.getElementById('updateStatus').value = report.status;
       document.getElementById('updatePriority').value = report.priority;
-      document.getElementById('updateNotes').value    = report.notes || '';
+      document.getElementById('updateNotes').value = report.notes || '';
 
       // Show escalate button for staff on non-escalated reports
       const escBtn = document.getElementById('escalateBtn');
@@ -1263,9 +1260,9 @@ function renderDetailActivity(activity) {
 
 async function submitUpdate() {
   clearAlert('updateAlertBox');
-  const status   = document.getElementById('updateStatus').value;
+  const status = document.getElementById('updateStatus').value;
   const priority = document.getElementById('updatePriority').value;
-  const notes    = document.getElementById('updateNotes').value.trim();
+  const notes = document.getElementById('updateNotes').value.trim();
 
   try {
     await api(`/reports/${detailReportId}`, { method: 'PATCH', body: { status, priority, notes } });
@@ -1288,7 +1285,7 @@ async function escalateReport() {
 }
 
 async function addComment() {
-  const comment     = document.getElementById('commentText').value.trim();
+  const comment = document.getElementById('commentText').value.trim();
   const is_internal = document.getElementById('commentInternal').checked;
   if (!comment) return toast('Comment cannot be empty.', 'warning');
 
@@ -1333,7 +1330,7 @@ function initAnonPage() {
 
   const uploadArea = document.getElementById('anonUploadArea');
   if (uploadArea) {
-    uploadArea.addEventListener('dragover',  e => { e.preventDefault(); uploadArea.classList.add('drag-over'); });
+    uploadArea.addEventListener('dragover', e => { e.preventDefault(); uploadArea.classList.add('drag-over'); });
     uploadArea.addEventListener('dragleave', () => uploadArea.classList.remove('drag-over'));
     uploadArea.addEventListener('drop', e => {
       e.preventDefault(); uploadArea.classList.remove('drag-over');
@@ -1345,36 +1342,36 @@ function initAnonPage() {
     e.preventDefault();
     clearAlert('anonAlertBox');
 
-    const category_id  = document.getElementById('an_category').value;
-    const title        = document.getElementById('an_title').value.trim();
-    const description  = document.getElementById('an_description').value.trim();
-    const location     = document.getElementById('an_location').value.trim();
+    const category_id = document.getElementById('an_category').value;
+    const title = document.getElementById('an_title').value.trim();
+    const description = document.getElementById('an_description').value.trim();
+    const location = document.getElementById('an_location').value.trim();
     const incident_date = document.getElementById('an_date').value;
     const incident_time = document.getElementById('an_time').value;
-    const priority     = document.getElementById('an_priority').value;
-    const contact      = document.getElementById('an_contact').value.trim();
+    const priority = document.getElementById('an_priority').value;
+    const contact = document.getElementById('an_contact').value.trim();
 
     if (!category_id || !title || !description || !location || !incident_date || !incident_time)
       return showAlert('anonAlertBox', 'Please fill all required fields.');
 
-    const btn     = document.getElementById('anonSubmitBtn');
+    const btn = document.getElementById('anonSubmitBtn');
     const spinner = document.getElementById('anonSpinner');
-    btn.disabled  = true;
+    btn.disabled = true;
     spinner?.classList.remove('hidden');
 
     try {
       const fd = new FormData();
-      fd.append('category_id',  category_id);
-      fd.append('title',        title);
-      fd.append('description',  description);
-      fd.append('location',     location);
+      fd.append('category_id', category_id);
+      fd.append('title', title);
+      fd.append('description', description);
+      fd.append('location', location);
       const anLat = document.getElementById('an_lat')?.value;
       const anLng = document.getElementById('an_lng')?.value;
       if (anLat) fd.append('latitude', anLat);
       if (anLng) fd.append('longitude', anLng);
       fd.append('incident_date', incident_date);
       fd.append('incident_time', incident_time);
-      fd.append('priority',     priority);
+      fd.append('priority', priority);
       if (contact) fd.append('anonymous_contact', contact);
       anonSelectedFiles.forEach(f => fd.append('images', f));
 
@@ -1427,11 +1424,11 @@ async function refreshAnalytics() {
     ]);
 
     const t = stats.totals;
-    document.getElementById('an_total').textContent        = t.total;
-    document.getElementById('an_pending').textContent      = t.pending;
+    document.getElementById('an_total').textContent = t.total;
+    document.getElementById('an_pending').textContent = t.pending;
     document.getElementById('an_investigating').textContent = t.investigating;
-    document.getElementById('an_resolved').textContent     = t.resolved;
-    document.getElementById('an_rejected').textContent     = t.rejected;
+    document.getElementById('an_resolved').textContent = t.resolved;
+    document.getElementById('an_rejected').textContent = t.rejected;
 
     animateCounters();
     buildStatusChart(t);
@@ -1458,8 +1455,8 @@ function buildStatusChart(t) {
       labels: ['Pending', 'Investigating', 'Resolved', 'Rejected'],
       datasets: [{
         data: [t.pending, t.investigating, t.resolved, t.rejected],
-        backgroundColor: ['rgba(245,158,11,0.1)','rgba(59,130,246,0.1)','rgba(16,185,129,0.1)','rgba(239,68,68,0.1)'],
-        borderColor:     ['#f59e0b','#3b82f6','#10b981','#ef4444'],
+        backgroundColor: ['rgba(245,158,11,0.1)', 'rgba(59,130,246,0.1)', 'rgba(16,185,129,0.1)', 'rgba(239,68,68,0.1)'],
+        borderColor: ['#f59e0b', '#3b82f6', '#10b981', '#ef4444'],
         borderWidth: 2,
         hoverOffset: 12,
         borderRadius: 4,
@@ -1482,8 +1479,8 @@ function buildPriorityChart(byPriority) {
       datasets: [{
         label: 'Reports',
         data: [map.low, map.medium, map.high, map.critical],
-        backgroundColor: ['rgba(16,185,129,0.2)','rgba(245,158,11,0.2)','rgba(249,115,22,0.2)','rgba(239,68,68,0.2)'],
-        borderColor:     ['#10b981','#f59e0b','#f97316','#ef4444'],
+        backgroundColor: ['rgba(16,185,129,0.2)', 'rgba(245,158,11,0.2)', 'rgba(249,115,22,0.2)', 'rgba(239,68,68,0.2)'],
+        borderColor: ['#10b981', '#f59e0b', '#f97316', '#ef4444'],
         borderWidth: 2,
         borderRadius: 8,
       }],
@@ -1503,17 +1500,17 @@ function buildCategoryChart(byCategory) {
       datasets: [{
         data: byCategory.map(c => c.count),
         backgroundColor: ANALYTICS_COLORS.map(c => `${c}22`),
-        borderColor:     ANALYTICS_COLORS,
+        borderColor: ANALYTICS_COLORS,
         borderWidth: 2,
         hoverOffset: 12,
         borderRadius: 4,
       }],
     },
-    options: { 
-      plugins: { 
-        legend: { position: 'right', labels: { boxWidth: 12, padding: 8, font: { size: 11 } } } 
-      }, 
-      cutout: '60%' 
+    options: {
+      plugins: {
+        legend: { position: 'right', labels: { boxWidth: 12, padding: 8, font: { size: 11 } } }
+      },
+      cutout: '60%'
     },
   });
 }
@@ -1577,8 +1574,8 @@ async function initTrackPage() {
 async function searchAnonymousReport(tracking) {
   clearAlert('trackAlertBox');
   const results = document.getElementById('trackResults');
-  const empty   = document.getElementById('trackEmpty');
-  const btn     = document.getElementById('trackBtn');
+  const empty = document.getElementById('trackEmpty');
+  const btn = document.getElementById('trackBtn');
   if (!results || !empty || !btn) return;
 
   results.classList.add('hidden');
@@ -1587,22 +1584,22 @@ async function searchAnonymousReport(tracking) {
 
   try {
     const report = await api(`/anonymous/track/${tracking}`);
-    
+
     // Fill details
-    const res_title    = document.getElementById('res_title');
-    const res_id       = document.getElementById('res_id');
+    const res_title = document.getElementById('res_title');
+    const res_id = document.getElementById('res_id');
     const res_category = document.getElementById('res_category');
     const res_priority = document.getElementById('res_priority');
-    const res_created  = document.getElementById('res_created');
-    const res_updated  = document.getElementById('res_updated');
-    const statusBadge  = document.getElementById('res_status_badge');
+    const res_created = document.getElementById('res_created');
+    const res_updated = document.getElementById('res_updated');
+    const statusBadge = document.getElementById('res_status_badge');
 
     if (res_title) res_title.textContent = report.title;
-    if (res_id) res_id.textContent    = tracking;
+    if (res_id) res_id.textContent = tracking;
     if (res_category) res_category.innerHTML = `<span>${report.category_icon}</span> ${report.category_name}`;
     if (res_priority) res_priority.innerHTML = `<span class="badge badge-${report.priority}">${report.priority}</span>`;
-    if (res_created) res_created.textContent  = fmtDateTime(report.created_at);
-    if (res_updated) res_updated.textContent  = fmtDateTime(report.updated_at);
+    if (res_created) res_created.textContent = fmtDateTime(report.created_at);
+    if (res_updated) res_updated.textContent = fmtDateTime(report.updated_at);
     if (statusBadge) statusBadge.innerHTML = `<span class="badge badge-${report.status}" style="font-size:.9rem;padding:6px 14px">${report.status.toUpperCase()}</span>`;
 
     results.classList.remove('hidden');
@@ -1613,7 +1610,7 @@ async function searchAnonymousReport(tracking) {
       showAlert('trackAlertBox', err.message || 'Error tracking report');
     }
   } finally {
-    if(btn) btn.disabled = false;
+    if (btn) btn.disabled = false;
   }
 }
 
@@ -1638,7 +1635,7 @@ function closeSosModal() {
 
 async function confirmSos() {
   const btn = document.querySelector('.btn-sos-confirm');
-  if(btn) btn.disabled = true;
+  if (btn) btn.disabled = true;
   toast('Detecting emergency location...', 'info');
 
   try {
@@ -1669,7 +1666,7 @@ async function sendSosData(lat, lng, fallbackInfo) {
 
     document.getElementById('sosMsg').classList.add('hidden');
     document.getElementById('sosActions').classList.add('hidden');
-    
+
     const resultDiv = document.getElementById('sosResult');
     resultDiv.classList.remove('hidden');
     resultDiv.innerHTML = `
@@ -1682,6 +1679,6 @@ async function sendSosData(lat, lng, fallbackInfo) {
   } catch (err) {
     toast('SOS Failed: ' + err.message, 'error');
     const btn = document.querySelector('.btn-sos-confirm');
-    if(btn) btn.disabled = false;
+    if (btn) btn.disabled = false;
   }
 }

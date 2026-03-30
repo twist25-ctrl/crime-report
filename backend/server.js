@@ -10,6 +10,9 @@ const app = express();
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 
+// ── Proxy Trust (for Railway/Vercel) ───────────────────────
+app.set('trust proxy', 1);
+
 // ── CORS ───────────────────────────────────────────────────
 const allowedOrigins = [
   'http://localhost:5000',
@@ -32,10 +35,12 @@ app.use(session({
   secret:            process.env.SESSION_SECRET || 'dev-secret-change-me',
   resave:            false,
   saveUninitialized: false,
+  proxy:             true,
   cookie: {
     secure:   process.env.NODE_ENV === 'production',
     httpOnly: true,
-    maxAge:   7_200_000, // 2 hours
+    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+    maxAge:   7_200_000, 
   },
 }));
 

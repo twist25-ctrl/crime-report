@@ -1,0 +1,20 @@
+{
+  "version": 2,
+  "public": true,
+  "rewrites": [
+    { "source": "/index", "destination": "/frontend/public/index.html" },
+    { "source": "/login", "destination": "/frontend/public/login.html" },
+    { "source": "/register", "destination": "/frontend/public/register.html" },
+    { "source": "/dashboard-public", "destination": "/frontend/public/dashboard-public.html" },
+    { "source": "/dashboard-staff", "destination": "/frontend/public/dashboard-staff.html" },
+    { "source": "/dashboard-admin", "destination": "/frontend/public/dashboard-admin.html" },
+    { "source": "/report-detail", "destination": "/frontend/public/report-detail.html" },
+    { "source": "/anonymous", "destination": "/frontend/public/anonymous.html" },
+    { "source": "/track-report", "destination": "/frontend/public/track-report.html" },
+    { "source": "/analytics", "destination": "/frontend/public/analytics.html" },
+    { "source": "/dashboard", "destination": "/frontend/public/dashboard-public.html" },
+    { "source": "/css/(.*)", "destination": "/frontend/css/$1" },
+    { "source": "/js/(.*)", "destination": "/frontend/js/$1" },
+    { "source": "/api/(.*)", "destination": "https://crime-report-backend.up.railway.app/api/$1" }
+  ]
+}
