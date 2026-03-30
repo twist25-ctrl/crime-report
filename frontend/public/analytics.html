@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Analytics — Crime Report System</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <div class="dashboard-wrapper">
+    <nav id="mainNavbar" class="navbar scrolled">
+      <div class="container">
+        <a href="/" class="nav-brand">🛡️ CrimeReport</a>
+        <div class="nav-links">
+          <a href="/">Home</a>
+          <a href="/dashboard">Dashboard</a>
+          <a href="/analytics" class="active">📊 Analytics</a>
+          <span id="navRoleBadge" class="role-badge" style="margin-left:10px"></span>
+          <span style="color:var(--text-muted);font-size:0.9rem;margin-left:10px">👤 <span id="navUserName"></span></span>
+          <a href="#" class="nav-auth-btn" style="margin-left:10px" onclick="logoutUser();return false;">Logout</a>
+        </div>
+      </div>
+    </nav>
+
+    <div class="dashboard-content reveal">
+      <div class="container">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:32px;flex-wrap:wrap;gap:16px">
+          <div>
+            <h1 style="margin-bottom:8px">📊 Analytics</h1>
+            <p class="text-muted">System-wide crime report data, distribution, and real-time trends.</p>
+          </div>
+          <button class="btn btn-outline" onclick="refreshAnalytics()">🔄 Refresh Data</button>
+        </div>
+
+        <!-- Stats -->
+        <div class="stats-grid">
+          <div class="stat-card"><div class="stat-num" id="an_total">0</div><div class="stat-label">Total</div></div>
+          <div class="stat-card"><div class="stat-num" style="color:#f59e0b" id="an_pending">0</div><div class="stat-label">Pending</div></div>
+          <div class="stat-card"><div class="stat-num" style="color:#3b82f6" id="an_investigating">0</div><div class="stat-label">Investigating</div></div>
+          <div class="stat-card"><div class="stat-num" style="color:#10b981" id="an_resolved">0</div><div class="stat-label">Resolved</div></div>
+          <div class="stat-card"><div class="stat-num" style="color:#ef4444" id="an_rejected">0</div><div class="stat-label">Rejected</div></div>
+        </div>
+
+        <!-- Charts -->
+        <div class="chart-grid">
+          <div class="chart-card">
+            <h3>Status Distribution</h3>
+            <canvas id="statusChart"></canvas>
+          </div>
+          <div class="chart-card">
+            <h3>Priority Breakdown</h3>
+            <canvas id="priorityChart"></canvas>
+          </div>
+          <div class="chart-card">
+            <h3>Category Distribution</h3>
+            <canvas id="categoryChart"></canvas>
+          </div>
+          <div class="chart-card">
+            <h3>Monthly Trends</h3>
+            <canvas id="trendChart"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="toastContainer" class="toast-container"></div>
+  <script src="/js/main.js"></script>
+  <script>initAnalyticsPage();</script>
+</body>
+</html>

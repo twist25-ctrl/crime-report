@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Dashboard — Crime Report System</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <link rel="stylesheet" href="/css/style.css">
+
+</head>
+<body>
+  <div class="dashboard-wrapper">
+    <!-- Navbar -->
+    <nav id="mainNavbar" class="navbar scrolled">
+      <div class="container">
+        <a href="/" class="nav-brand">🛡️ CrimeReport</a>
+        <div class="nav-links">
+          <a href="/">Home</a>
+          <a href="/dashboard" class="active">Dashboard</a>
+          <span id="navRoleBadge" class="role-badge">User</span>
+          <span style="color:var(--text-muted);font-size:0.9rem;margin-left:10px">👤 <span id="navUserName"></span></span>
+          <a href="#" class="nav-auth-btn" style="margin-left:10px" onclick="logoutUser();return false;">Logout</a>
+          <button id="menuBtn" class="menu-toggle" title="Menu">
+            <span></span><span></span><span></span>
+          </button>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Sidebar Drawer -->
+    <div id="sidebarDrawer" class="sidebar-drawer">
+      <div class="sidebar-header">
+        <h3>My Account</h3>
+        <button id="closeSidebar" class="btn-close">&times;</button>
+      </div>
+      <div class="sidebar-body">
+        <div class="profile-section">
+          <h4>Personal Information</h4>
+          <p class="section-hint">Update your details to help staff reach you.</p>
+          
+          <form id="profileForm">
+            <div class="form-group">
+              <label>Full Name</label>
+              <input type="text" id="profName" class="form-control" placeholder="Your Name" required>
+            </div>
+            <div class="form-group">
+              <label>Phone Number</label>
+              <input type="tel" id="profPhone" class="form-control" placeholder="+1234567890">
+            </div>
+            <div class="form-group">
+              <label>Alternate Phone</label>
+              <input type="tel" id="profPhoneAlt" class="form-control" placeholder="Backup contact">
+            </div>
+            <div class="form-group">
+              <label>Preferred Contact</label>
+              <select id="profPref" class="form-control">
+                <option value="email">Email</option>
+                <option value="phone">Voice Call</option>
+                <option value="sms">SMS / WhatsApp</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Contact Notes / Bio</label>
+              <textarea id="profNotes" class="form-control" rows="3" placeholder="Best time to call, landmarks, etc."></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary w-100">Save Changes</button>
+          </form>
+        </div>
+
+        <div class="sidebar-footer">
+          <button class="btn btn-outline w-100" onclick="logoutUser()">Logout</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Content -->
+    <div class="dashboard-content reveal">
+      <div class="container">
+        <div style="margin-bottom:32px">
+          <h1 style="margin-bottom:8px">Welcome, <span id="welcomeName"></span> 👋</h1>
+          <p class="text-muted">Manage your crime reports and track safety from your secure dashboard.</p>
+        </div>
+
+        <!-- Stats -->
+        <div class="stats-grid">
+          <div class="stat-card"><div class="stat-num" id="statTotal">0</div><div class="stat-label">Total Reports</div></div>
+          <div class="stat-card"><div class="stat-num" style="color:#f59e0b" id="statPending">0</div><div class="stat-label">Pending</div></div>
+          <div class="stat-card"><div class="stat-num" style="color:#3b82f6" id="statInvestigating">0</div><div class="stat-label">Investigating</div></div>
+          <div class="stat-card"><div class="stat-num" style="color:#10b981" id="statResolved">0</div><div class="stat-label">Resolved</div></div>
+        </div>
+
+        <!-- Tabs -->
+        <div class="tab-bar">
+          <button class="tab-btn active" onclick="showTab('myReports',this)">📋 My Reports</button>
+          <button class="tab-btn" onclick="showTab('createReport',this)">➕ New Report</button>
+        </div>
+
+        <!-- Tab: My Reports -->
+        <div id="tab-myReports" class="tab-panel active">
+          <div class="filter-bar" style="gap:10px;margin-bottom:16px">
+            <div class="search-box">
+              <span class="search-icon">🔍</span>
+              <input type="text" id="searchInput" class="form-control" placeholder="Search reports..." oninput="debounceSearch()">
+            </div>
+            <select id="filterCategory" class="form-control" onchange="loadMyReports()">
+              <option value="">All Categories</option>
+            </select>
+            <select id="filterStatus" class="form-control" onchange="loadMyReports()">
+              <option value="">All Statuses</option>
+              <option value="pending">Pending</option>
+              <option value="investigating">Investigating</option>
+              <option value="resolved">Resolved</option>
+              <option value="rejected">Rejected</option>
+            </select>
+          </div>
+          <div id="reportsList">
+            <div class="loading-overlay"><div class="spinner"></div> Loading...</div>
+          </div>
+        </div>
+
+        <!-- Tab: Create Report -->
+        <div id="tab-createReport" class="tab-panel">
+          <div class="card">
+            <h2 class="section-title">📝 Submit New Report</h2>
+            <div id="createAlertBox"></div>
+
+            <form id="createReportForm">
+              <div class="form-grid">
+                <div class="form-group">
+                  <label for="cr_category">Category *</label>
+                  <select id="cr_category" class="form-control" required>
+                    <option value="">Select category...</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label for="cr_priority">Priority</label>
+                  <select id="cr_priority" class="form-control">
+                    <option value="low">Low</option>
+                    <option value="medium" selected>Medium</option>
+                    <option value="high">High</option>
+                    <option value="critical">Critical</option>
+                  </select>
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="cr_title">Title *</label>
+                <input type="text" id="cr_title" class="form-control" placeholder="Brief title of the incident" required>
+              </div>
+              <div class="form-group">
+                <label for="cr_description">Description *</label>
+                <textarea id="cr_description" class="form-control" rows="4" placeholder="Describe the incident in detail..." required></textarea>
+              </div>
+              <div class="form-group">
+                <label for="cr_location">Location *</label>
+                <div class="location-input-group">
+                  <input type="text" id="cr_location" class="form-control" placeholder="Where did the incident occur?" required>
+                  <button type="button" id="btnDetectLocation" class="btn-locate" title="Use current location">📍 Use Current Location</button>
+                </div>
+                <input type="hidden" id="cr_lat">
+                <input type="hidden" id="cr_lng">
+                <div id="cr_map_wrapper" class="map-wrapper">
+                  <div id="cr_map" class="map-container"></div>
+                </div>
+              </div>
+              <div class="form-grid">
+                <div class="form-group">
+                  <label for="cr_date">Incident Date *</label>
+                  <input type="date" id="cr_date" class="form-control" required>
+                </div>
+                <div class="form-group">
+                  <label for="cr_time">Incident Time *</label>
+                  <input type="time" id="cr_time" class="form-control" required>
+                </div>
+              </div>
+              <div class="form-group">
+                <label>Evidence Images (Max 10, 5MB each)</label>
+                <div id="uploadArea" class="upload-area" onclick="document.getElementById('cr_images').click()">
+                  <div style="font-size:2rem;margin-bottom:8px">📷</div>
+                  <p>Click or drag images here to upload</p>
+                  <p class="text-muted text-small">JPEG, PNG, GIF, WebP supported</p>
+                </div>
+                <input type="file" id="cr_images" accept="image/*" multiple style="display:none" onchange="handleImageSelect(this.files)">
+                <div id="imagePreviewGrid" style="margin-top:10px"></div>
+              </div>
+              <button type="submit" id="submitReportBtn" class="btn btn-primary">
+                <span id="submitSpinner" class="spinner hidden"></span>
+                Submit Report
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="toastContainer" class="toast-container"></div>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="/js/main.js"></script>
+  <script>initPublicDashboard();</script>
+</body>
+</html>

@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Track Report — Crime Report System</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <nav id="mainNavbar" class="navbar scrolled">
+    <div class="container" style="max-width:1140px">
+      <a href="/" class="nav-brand">🛡️ CrimeReport</a>
+      <div class="nav-links">
+        <a href="/">Home</a>
+        <a href="/anonymous">Report Crime</a>
+        <a href="/track-report" class="active">Track Report</a>
+        <a href="/login" class="nav-auth-btn">Login</a>
+      </div>
+    </div>
+  </nav>
+
+    <div class="dashboard-content reveal">
+      <div class="container" style="max-width:700px">
+        <div class="track-header" style="text-align:center;margin-bottom:40px">
+          <h1 style="margin-bottom:12px;font-weight:800">🔍 Track Your Report</h1>
+          <p class="text-muted">Enter your secure tracking number to view the current status and official updates on your report.</p>
+        </div>
+
+  <div class="container" style="padding-bottom:48px">
+    <div class="card">
+      <form id="trackForm" style="display:flex;gap:12px">
+        <input type="text" id="trackNumber" class="form-control" placeholder="Enter Tracking Number (e.g. ANM-XXXXXX)" required>
+        <button type="submit" id="trackBtn" class="btn btn-primary">Track Report</button>
+      </form>
+      <div id="trackAlertBox" class="mt-3"></div>
+    </div>
+
+    <!-- Results -->
+    <div id="trackResults" class="hidden">
+      <div class="card results-card">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:20px">
+          <div>
+            <h2 id="res_title" style="margin-bottom:4px">Report Title</h2>
+            <div id="res_category" class="category-pill" style="display:inline-block">Category</div>
+          </div>
+          <div id="res_status_badge"></div>
+        </div>
+        
+        <div class="detail-row">
+          <span class="detail-label">Tracking ID</span>
+          <span class="detail-value" id="res_id"></span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label">Priority</span>
+          <span class="detail-value" id="res_priority"></span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label">Submitted On</span>
+          <span class="detail-value" id="res_created"></span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label">Last Updated</span>
+          <span class="detail-value" id="res_updated"></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Empty State -->
+    <div id="trackEmpty" class="hidden">
+      <div class="empty-state">
+        <div class="empty-icon">📂</div>
+        <h3>No Report Found</h3>
+        <p>We couldn't find any report with that tracking number. Please check the ID and try again.</p>
+      </div>
+    </div>
+  </div>
+
+  <div id="toastContainer" class="toast-container"></div>
+  <script src="/js/main.js"></script>
+  <script>initTrackPage();</script>
+
+  <!-- Emergency SOS -->
+  <button class="sos-fab" onclick="showSosModal()" title="Emergency SOS">🆘</button>
+  <div id="sosOverlay" class="sos-overlay hidden">
+    <div class="sos-modal">
+      <h2>🚨 Emergency SOS</h2>
+      <p id="sosMsg">Your live location will be detected and an emergency alert will be sent to authorities for immediate help.</p>
+      <div id="sosActions" class="sos-actions">
+        <button class="btn-sos-confirm" onclick="confirmSos()">Send SOS Now</button>
+        <button class="btn-sos-cancel" onclick="closeSosModal()">Cancel</button>
+      </div>
+      <div id="sosResult" class="sos-result hidden"></div>
+    </div>
+  </div>
+</body>
+</html>

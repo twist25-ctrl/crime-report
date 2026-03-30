@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Report Detail — Crime Report System</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <div class="dashboard-wrapper">
+    <nav id="mainNavbar" class="navbar scrolled">
+      <div class="container">
+        <a href="/" class="nav-brand">🛡️ CrimeReport</a>
+        <div class="nav-links">
+          <a href="/">Home</a>
+          <a href="/dashboard" class="active">Dashboard</a>
+          <span id="navRoleBadge" class="role-badge" style="margin-left:10px"></span>
+          <span style="color:var(--text-muted);font-size:0.9rem;margin-left:10px">👤 <span id="navUserName"></span></span>
+          <a href="#" class="nav-auth-btn" style="margin-left:10px" onclick="logoutUser();return false;">Logout</a>
+        </div>
+      </div>
+    </nav>
+
+    <div class="dashboard-content reveal">
+      <div class="container">
+        <a href="/dashboard" class="back-link">← Back to Dashboard</a>
+
+        <!-- Loading -->
+        <div id="detailLoading" class="loading-overlay">
+          <div class="spinner"></div> Loading report...
+        </div>
+
+        <!-- Error -->
+        <div id="detailError" class="hidden">
+          <div class="empty-state">
+            <div class="empty-icon">⚠️</div>
+            <h3>Report Not Found</h3>
+            <p>The requested report could not be loaded.</p>
+            <a href="/dashboard" class="btn btn-primary mt-3">← Back to Dashboard</a>
+          </div>
+        </div>
+
+        <!-- Content -->
+        <div id="detailContent" class="hidden">
+          <!-- Header -->
+          <div class="detail-header">
+            <div class="detail-header-top">
+              <div>
+                <div id="detailBadges" class="detail-badges"></div>
+                <h1 id="detailTitle" class="detail-title"></h1>
+                <span id="detailCategory" class="category-pill"></span>
+              </div>
+              <div style="display:flex;gap:8px;flex-wrap:wrap">
+                <button class="btn btn-outline btn-sm" onclick="exportPDF()">📄 Export</button>
+              </div>
+            </div>
+            <div id="detailMeta" class="detail-meta"></div>
+          </div>
+
+          <!-- Description -->
+          <div class="panel">
+            <h3>📝 Description</h3>
+            <p id="detailDescription" style="white-space:pre-wrap"></p>
+          </div>
+
+          <!-- Location Map (Staff/Admin) -->
+          <div id="locationPanel" class="panel hidden">
+            <h3>📍 Location Details</h3>
+            <div id="locationInfo" class="location-detail-info"></div>
+            <div id="detailMapContainer" class="detail-map-container"></div>
+          </div>
+
+          <!-- Images -->
+          <div class="panel">
+            <h3>📷 Evidence <span id="imageCount" class="text-muted text-small"></span></h3>
+            <div id="imageGallery" class="img-gallery"></div>
+          </div>
+
+          <!-- Update Panel (Staff/Admin only) -->
+          <div id="updatePanel" class="panel hidden">
+            <h3>🔧 Update Report</h3>
+            <div id="updateAlertBox"></div>
+            <div class="form-grid">
+              <div class="form-group">
+                <label>Status</label>
+                <select id="updateStatus" class="form-control">
+                  <option value="pending">Pending</option>
+                  <option value="investigating">Investigating</option>
+                  <option value="resolved">Resolved</option>
+                  <option value="rejected">Rejected</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Priority</label>
+                <select id="updatePriority" class="form-control">
+                  <option value="low">Low</option>
+                  <option value="medium">Medium</option>
+                  <option value="high">High</option>
+                  <option value="critical">Critical</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Internal Notes</label>
+              <textarea id="updateNotes" class="form-control" rows="3" placeholder="Add internal notes..."></textarea>
+            </div>
+            <div style="display:flex;gap:8px">
+              <button class="btn btn-primary btn-sm" onclick="submitUpdate()">💾 Save Changes</button>
+              <button id="escalateBtn" class="btn btn-danger btn-sm" onclick="escalateReport()" style="display:none">🚨 Escalate to Admin</button>
+            </div>
+          </div>
+
+          <!-- Comments (Staff/Admin only) -->
+          <div id="commentPanel" class="panel hidden">
+            <h3>💬 Comments</h3>
+            <div id="commentsList" class="activity-list"></div>
+            <div style="margin-top:16px;border-top:1px solid var(--border);padding-top:16px">
+              <div class="form-group">
+                <textarea id="commentText" class="form-control" rows="3" placeholder="Add a comment..."></textarea>
+              </div>
+              <div style="display:flex;align-items:center;gap:12px">
+                <label style="display:flex;align-items:center;gap:6px;font-size:.85rem;cursor:pointer">
+                  <input type="checkbox" id="commentInternal"> Internal only
+                </label>
+                <button class="btn btn-primary btn-sm" onclick="addComment()">💬 Post Comment</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Activity Log -->
+          <div class="panel">
+            <h3>📜 Activity Log</h3>
+            <div id="activityLogList" class="activity-list"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Lightbox -->
+  <div class="lightbox-overlay" id="lightboxOverlay" onclick="closeLightbox()">
+    <img id="lightboxImg" src="" alt="Evidence">
+  </div>
+
+  <div id="toastContainer" class="toast-container"></div>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="/js/main.js"></script>
+  <script>initReportDetailPage();</script>
+</body>
+</html>

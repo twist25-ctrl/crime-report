@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Staff Dashboard — Crime Report System</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <div class="dashboard-wrapper">
+    <nav id="mainNavbar" class="navbar scrolled">
+      <div class="container">
+        <a href="/" class="nav-brand">🛡️ CrimeReport</a>
+        <div class="nav-links">
+          <a href="/">Home</a>
+          <a href="/dashboard" class="active">Dashboard</a>
+          <a href="/analytics">📊 Analytics</a>
+          <span class="role-badge staff" style="margin-left:10px">Staff</span>
+          <span style="color:var(--text-muted);font-size:0.9rem;margin-left:10px">👤 <span id="navUserName"></span></span>
+          <a href="#" class="nav-auth-btn" style="margin-left:10px" onclick="logoutUser();return false;">Logout</a>
+        </div>
+      </div>
+    </nav>
+
+    <div class="dashboard-content reveal">
+      <div class="container">
+        <div style="margin-bottom:32px">
+          <h1 style="margin-bottom:8px">Staff Dashboard</h1>
+          <p class="text-muted">Review and manage crime reports for public safety.</p>
+        </div>
+
+        <!-- Tabs -->
+        <div class="tab-bar">
+          <button class="tab-btn active" onclick="showTab('overview',this)">📊 Overview</button>
+          <button class="tab-btn" onclick="showTab('allReports',this)">📋 All Reports</button>
+        </div>
+
+        <!-- Tab: Overview -->
+        <div id="tab-overview" class="tab-panel active">
+          <div class="stats-grid">
+            <div class="stat-card"><div class="stat-num" id="ss_total">0</div><div class="stat-label">Total</div></div>
+            <div class="stat-card"><div class="stat-num" style="color:#f59e0b" id="ss_pending">0</div><div class="stat-label">Pending</div></div>
+            <div class="stat-card"><div class="stat-num" style="color:#3b82f6" id="ss_investigating">0</div><div class="stat-label">Investigating</div></div>
+            <div class="stat-card"><div class="stat-num" style="color:#10b981" id="ss_resolved">0</div><div class="stat-label">Resolved</div></div>
+            <div class="stat-card"><div class="stat-num" style="color:#ef4444" id="ss_critical">0</div><div class="stat-label">Critical</div></div>
+          </div>
+          <div class="overview-grid">
+            <div class="overview-card">
+              <h3>📂 Category Breakdown</h3>
+              <div id="categoryBreakdown"></div>
+            </div>
+            <div class="overview-card">
+              <h3>📌 Recent Activity</h3>
+              <div id="recentActivityList" class="activity-list loading-overlay">
+                <div class="spinner"></div> Loading...
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tab: All Reports -->
+        <div id="tab-allReports" class="tab-panel">
+          <div class="filter-bar" style="gap:10px;margin-bottom:16px">
+            <div class="search-box">
+              <span class="search-icon">🔍</span>
+              <input type="text" id="staffSearch" class="form-control" placeholder="Search..." oninput="debounceSearch()">
+            </div>
+            <select id="staffFilterCat" class="form-control" onchange="loadStaffReports()">
+              <option value="">All Categories</option>
+            </select>
+            <select id="staffFilterStatus" class="form-control" onchange="loadStaffReports()">
+              <option value="">All Statuses</option>
+              <option value="pending">Pending</option>
+              <option value="investigating">Investigating</option>
+              <option value="resolved">Resolved</option>
+              <option value="rejected">Rejected</option>
+            </select>
+            <select id="staffFilterPriority" class="form-control" onchange="loadStaffReports()">
+              <option value="">All Priorities</option>
+              <option value="low">Low</option>
+              <option value="medium">Medium</option>
+              <option value="high">High</option>
+              <option value="critical">Critical</option>
+            </select>
+            <input type="date" id="staffDateFrom" class="form-control" onchange="loadStaffReports()" style="max-width:160px">
+            <input type="date" id="staffDateTo" class="form-control" onchange="loadStaffReports()" style="max-width:160px">
+          </div>
+          <div id="staffReportsList">
+            <div class="loading-overlay"><div class="spinner"></div> Loading...</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="toastContainer" class="toast-container"></div>
+  <script src="/js/main.js"></script>
+  <script>initStaffDashboard();</script>
+</body>
+</html>
