@@ -5,7 +5,10 @@
 
 'use strict';
 
-const API = 'http://localhost:5001/api';
+// Detect environment and set the API URL accordingly
+const API = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+  ? 'http://localhost:5001/api'
+  : 'https://crime-report-backend.up.railway.app/api'; // <-- REPLACE THIS with your actual Railway App URL (e.g., https://your-app.up.railway.app/api)
 
 // ─────────────────────────────────────────────
 // Modern UI Interactions (Homepage & Global)
